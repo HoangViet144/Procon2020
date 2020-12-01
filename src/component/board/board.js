@@ -5,17 +5,24 @@ import {
 }
     from '@material-ui/core'
 import { getMatches } from '../manageRequest/axiosRequest'
+import { connect } from 'react-redux'
 
 const Board = (props) => {
     return (
-        // <Grid>
-        //     <Grid
-        //         item
-        //     >
-        //         <Button onClick={getUsers}>Get matches</Button>
-        //     </Grid>
-        // </Grid>
-        <button onClick={getMatches}>bam vo</button>
+        <Grid>
+            <Grid
+                item
+            >
+                <Button onClick={props.getMatches}>Get matches</Button>
+                <Button onClick={props.getMatch}> Get match with id {props.matchId} </Button>
+            </Grid>
+        </Grid>
+
     )
 }
-export default Board
+const mapStateToProps = (state) => {
+    return {
+        matchId: state.matchesInfo ? state.matchesInfo.id : null
+    }
+}
+export default connect(mapStateToProps, { getMatches })(Board)

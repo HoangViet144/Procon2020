@@ -12,6 +12,11 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 matchesInfo: action.payload
             }
+        case actionTypes.INFO_BOARD:
+            return {
+                ...state,
+                matchInfo: action.payload
+            }
     }
     return state;
 };

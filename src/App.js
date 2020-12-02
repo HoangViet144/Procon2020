@@ -1,12 +1,12 @@
 import logo from './logo.svg';
 import './App.css';
-import Board from './component/board/board'
+import Game from './component/game/game'
 
 
 const App = () => {
     return (
         <div className="App">
-            <Board />
+            <Game />
         </div>
     );
 }

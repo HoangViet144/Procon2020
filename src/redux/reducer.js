@@ -17,6 +17,11 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 matchInfo: action.payload
             }
+        case actionTypes.SET_AGENT_ACTION:
+            return {
+                ...state,
+                agentAction: action.payload
+            }
     }
     return state;
 };

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
     Button,
     Grid,
@@ -7,9 +7,11 @@ import {
 }
     from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { getMatches, getMatchesById } from '../../manageRequest/axiosRequest'
+import { getMatches, getMatchesById } from '../../requestManagement/axiosRequest'
 import { connect } from 'react-redux'
 import Board from '../board/board'
+import MatchInfoPanel from '../matchInfoPanel/matchInfoPanel'
+import AgentsInfoPanel from '../agentInfoPanel/agentInfoPanel'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -21,17 +23,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 const Game = (props) => {
     const classes = useStyles();
+    const [matchID, setMatchID] = useState(-1)
     let options = []
     for (var id in props.matchesInfo) {
         options.push(props.matchesInfo[id])
     }
     const handleChosenMatch = (value) => {
         props.getMatchesById(value.id)
+        setMatchID(value.id - 1)
     }
     return (
         <Grid
             className={classes.root}
             container
+            spacing={5}
         >-
             <Grid
                 item
@@ -59,9 +64,26 @@ const Game = (props) => {
             </Grid>
             <Grid
                 item
+                md={6}
+            >
+                <MatchInfoPanel matchID={matchID} />
+            </Grid>
+            <Grid
+                item
+                md={6}
+            >
+                <AgentsInfoPanel matchID={matchID} />
+            </Grid>
+            <Grid
+                item
+                md={12}
             >
                 <Board />
             </Grid>
+            <Grid
+                item
+                md={5}
+            ></Grid>
         </Grid>
     )
 }

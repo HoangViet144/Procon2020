@@ -1,7 +1,5 @@
 import axios from 'axios'
-import { initBoard } from '../redux/actions'
 import { TOKEN, BASE_URL } from '../config'
-import { INIT_BOARD } from '../redux/actiontype'
 import * as actionTypes from '../redux/actiontype';
 
 export const getMatches = () => async dispatch => {
@@ -35,7 +33,8 @@ export const getMatches = () => async dispatch => {
         alert("er")
     }
 }
-export const getMatchesById = (id) => async dispatch => {
+const TEAM1 = 1
+export const getMatchesById = (id, teamID) => async dispatch => {
     try {
         console.log(id)
         var config = {
@@ -51,11 +50,31 @@ export const getMatchesById = (id) => async dispatch => {
         axios(config)
             .then(response => {
                 console.log(JSON.stringify(response.data));
+                let agentInfo = {}
+                if (response.data.teams[0].teamID === teamID)
+                    agentInfo = response.data.teams[0].agents
+                if (response.data.teams[1].teamID === teamID)
+                    agentInfo = response.data.teams[1].agents
+                let agentAction = []
+                for (let id in agentInfo) {
+                    agentAction.push({
+                        agentID: agentInfo[id].agentID,
+                        curX: agentInfo[id].x,
+                        curY: agentInfo[id].y,
+                        dx: 0,
+                        dy: 0,
+                        type: 'stay'
+                    })
+                }
                 dispatch({
                     type: actionTypes.INFO_BOARD,
                     payload: {
                         ...response.data
                     }
+                })
+                dispatch({
+                    type: actionTypes.SET_AGENT_ACTION,
+                    payload: agentAction
                 })
             })
             .catch(error => {

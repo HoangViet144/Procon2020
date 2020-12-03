@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 const InfoPanel = (props) => {
     const classes = useStyles();
+    console.log(props.agentAction)
     return (
         <Table>
             <TableBody>
@@ -29,23 +30,25 @@ const InfoPanel = (props) => {
                     <TableCell>dy</TableCell>
                     <TableCell>type</TableCell>
                 </TableRow>
-                {props.matchesInfo && props.matchID != -1 ?
-                    <TableRow>
-                        <TableCell>{props.matchesInfo[props.matchID].teamID}</TableCell>
-                        <TableCell>{props.matchesInfo[props.matchID].matchTo}</TableCell>
-                        <TableCell>{props.matchesInfo[props.matchID].id}</TableCell>
-                        <TableCell>{props.matchesInfo[props.matchID].turns}</TableCell>
-                        <TableCell>{props.matchesInfo[props.matchID].turnMillis}</TableCell>
-                        <TableCell>{props.matchesInfo[props.matchID].intervalMillis}</TableCell>
-                    </TableRow>
-                    : null}
+                {props.agentAction && props.agentAction.map((ele, ind) => {
+                    return (
+                        <TableRow key={ind}>
+                            <TableCell>{ele.agentID}</TableCell>
+                            <TableCell>{ele.curX}</TableCell>
+                            <TableCell>{ele.curY}</TableCell>
+                            <TableCell>{ele.dx}</TableCell>
+                            <TableCell>{ele.dy}</TableCell>
+                            <TableCell>{ele.type}</TableCell>
+                        </TableRow>
+                    )
+                })}
             </TableBody>
         </Table>
     )
 }
 const mapStateToProps = (state) => {
     return {
-        matchesInfo: state.matchesInfo
+        agentAction: state.agentAction
 
     }
 }

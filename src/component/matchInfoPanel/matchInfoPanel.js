@@ -29,14 +29,14 @@ const InfoPanel = (props) => {
                     <TableCell>turn sec</TableCell>
                     <TableCell>interval sec</TableCell>
                 </TableRow>
-                {props.matchesInfo && props.matchID != -1 ?
+                {props.matchInfo ?
                     <TableRow>
-                        <TableCell>{props.matchesInfo[props.matchID].teamID}</TableCell>
-                        <TableCell>{props.matchesInfo[props.matchID].matchTo}</TableCell>
-                        <TableCell>{props.matchesInfo[props.matchID].id}</TableCell>
-                        <TableCell>{props.matchesInfo[props.matchID].turns}</TableCell>
-                        <TableCell>{props.matchesInfo[props.matchID].turnMillis}</TableCell>
-                        <TableCell>{props.matchesInfo[props.matchID].intervalMillis}</TableCell>
+                        <TableCell>{props.matchInfo.teamID}</TableCell>
+                        <TableCell>{props.matchInfo.matchTo}</TableCell>
+                        <TableCell>{props.matchInfo.id}</TableCell>
+                        <TableCell>{props.matchInfo.turns}</TableCell>
+                        <TableCell>{props.matchInfo.turnMillis}</TableCell>
+                        <TableCell>{props.matchInfo.intervalMillis}</TableCell>
                     </TableRow>
                     : null}
             </TableBody>

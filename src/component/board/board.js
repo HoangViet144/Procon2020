@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Button,
     Grid,
@@ -8,9 +8,8 @@ import {
     from '@material-ui/core'
 import { connect } from 'react-redux'
 import WallImage from './wall.png'
+import { validateMove } from './validation'
 
-const TEAM1 = 1 ///? id luon la 1 va 2??? 1 la team minh???
-const TEAM2 = 2
 const useStyles = makeStyles((theme) => ({
     root: {
         // backgroundColor: theme.palette.background.dark,
@@ -39,13 +38,76 @@ const useStyles = makeStyles((theme) => ({
     },
     tiledTeam2: {
         backgroundColor: 'DeepSkyBlue'
-    }
+    },
+    suggestTeam1: {
+        //  backgroundColor: 'yellow',
+        //animation: '$blinkingBackground 2s infinite',
+        animation: '$glowing 1500ms infinite'
+    },
+    '@keyframes glowing': {
+        '0%': { backgroundColor: 'White', },
+        '50%': { backgroundColor: 'LightCyan', },
+        '100%': { backgroundColor: 'LightBlue', }
+    },
 }));
 const Board = (props) => {
+    const MY_TEAM = props.teamID
     const classes = useStyles();
-    let buttonGroupInfo = []
-    let buttonGroup = []
-    if (props.matchInfo) {
+    let [buttonGroup, setButtonGroup] = useState([])
+    let [buttonGroupInfo, setButtonGroupInfo] = useState([])
+    const [decision, setDecision] = useState({
+        id: null,
+        x: null,
+        y: null
+    })
+
+    const handleChosen = (x, y) => {
+        if (decision.id) {
+            console.log("validate begin")
+            validateMove(decision, { x: x, y: y })
+            setDecision({
+                id: null,
+                x: null,
+                y: null
+            })
+            let newButtonGroupInfo = [...buttonGroupInfo]
+            for (var i = 0; i < props.matchInfo.height; i++) {
+                for (var j = 0; j < props.matchInfo.width; j++) {
+                    newButtonGroupInfo[i][j].css = newButtonGroupInfo[i][j].css.filter(item => item !== "suggestTeam1")
+                }
+            }
+            setButtonGroupInfo(newButtonGroupInfo)
+
+            return
+        }
+        let newButtonGroupInfo = [...buttonGroupInfo]
+        for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+                let neighborX = x + dx
+                let neighborY = y + dy
+                if (neighborX < 0 ||
+                    neighborX >= props.matchInfo.width ||
+                    neighborY < 0 ||
+                    neighborY >= props.matchInfo.height)
+                    return
+
+                if (newButtonGroupInfo[x][y].teamID !== MY_TEAM) return;
+                console.log(x, y, "update button")
+                newButtonGroupInfo[neighborX][neighborY].css.push("suggestTeam1")
+            }
+        }
+        setDecision({
+            id: buttonGroupInfo[x][y].agentID,
+            x: x,
+            y: y
+        })
+        setButtonGroupInfo(newButtonGroupInfo)
+    }
+    useEffect(() => {
+
+        if (!props.matchInfo) return
+        console.log("call1")
+        let buttonGroupInfo = []
         /// get point
         for (var i = 0; i < props.matchInfo.height; i++) {
             let rowInfo = []
@@ -53,7 +115,8 @@ const Board = (props) => {
                 let info = {
                     point: props.matchInfo.points[i][j],
                     obstacles: false,
-                    css: ["button"]
+                    css: ["button"],
+                    teamID: 0
                 }
                 rowInfo.push(info)
             }
@@ -61,19 +124,19 @@ const Board = (props) => {
         }
 
         /// get tiled
-        for (var i = 0; i < props.matchInfo.height; i++) {
-            for (var j = 0; j < props.matchInfo.width; j++) {
-                if (props.matchInfo.tiled[i][j] == TEAM1) {
+        for (let i = 0; i < props.matchInfo.height; i++) {
+            for (let j = 0; j < props.matchInfo.width; j++) {
+                if (props.matchInfo.tiled[i][j] == MY_TEAM) {
                     buttonGroupInfo[i][j].css.push("tiledTeam1")
                 }
-                if (props.matchInfo.tiled[i][j] == TEAM2) {
+                if (props.matchInfo.tiled[i][j] !== MY_TEAM && props.matchInfo.tiled[i][j]) {
                     buttonGroupInfo[i][j].css.push("tiledTeam2")
                 }
             }
         }
 
         /// get treasure
-        for (var id in props.matchInfo.treasure) {
+        for (let id in props.matchInfo.treasure) {
             let x = props.matchInfo.treasure[id].x
             let y = props.matchInfo.treasure[id].y
             let point = props.matchInfo.treasure[id].point
@@ -84,34 +147,42 @@ const Board = (props) => {
             }
         }
         /// get obstacles
-        for (var id in props.matchInfo.obstacles) {
+        for (let id in props.matchInfo.obstacles) {
             let x = props.matchInfo.obstacles[id].x
             let y = props.matchInfo.obstacles[id].y
             buttonGroupInfo[y - 1][x - 1].obstacles = true
         }
 
         /// get current agents' position
-        if (props.matchInfo.teams[0].teamID === TEAM1) {
-            for (let id in props.matchInfo.teams[0].agents) {
-                let x = props.matchInfo.teams[0].agents[id].x
-                let y = props.matchInfo.teams[0].agents[id].y
-                let agentID = props.matchInfo.teams[0].agents[id].agentID
-                buttonGroupInfo[y - 1][x - 1].agentID = agentID
-                buttonGroupInfo[y - 1][x - 1].css.push("agentTeam1")
+        for (let ind in props.matchInfo.teams) {
+            if (props.matchInfo.teams[ind].teamID === MY_TEAM) {
+                for (let id in props.matchInfo.teams[ind].agents) {
+                    let x = props.matchInfo.teams[ind].agents[id].x
+                    let y = props.matchInfo.teams[ind].agents[id].y
+                    let agentID = props.matchInfo.teams[ind].agents[id].agentID
+                    buttonGroupInfo[y - 1][x - 1].agentID = agentID
+                    buttonGroupInfo[y - 1][x - 1].css.push("agentTeam1")
+                    buttonGroupInfo[y - 1][x - 1].teamID = props.matchInfo.teams[ind].teamID
+                }
+            }
+            if (props.matchInfo.teams[ind].teamID !== MY_TEAM) {
+                for (let id in props.matchInfo.teams[ind].agents) {
+                    let x = props.matchInfo.teams[ind].agents[id].x
+                    let y = props.matchInfo.teams[ind].agents[id].y
+                    let agentID = props.matchInfo.teams[ind].agents[id].agentID
+                    buttonGroupInfo[y - 1][x - 1].agentID = agentID
+                    buttonGroupInfo[y - 1][x - 1].css.push("agentTeam2")
+                    buttonGroupInfo[y - 1][x - 1].teamID = props.matchInfo.teams[ind].teamID
+                }
             }
         }
+        setButtonGroupInfo(buttonGroupInfo)
+    }, [props.matchInfo])
+    useEffect(() => {
+        if (!props.matchInfo) return
 
-        if (props.matchInfo.teams[1].teamID === TEAM2) {
-            for (let id in props.matchInfo.teams[1].agents) {
-                let x = props.matchInfo.teams[1].agents[id].x
-                let y = props.matchInfo.teams[1].agents[id].y
-                let agentID = props.matchInfo.teams[1].agents[id].agentID
-                buttonGroupInfo[y - 1][x - 1].agentID = agentID
-                buttonGroupInfo[y - 1][x - 1].css.push("agentTeam2")
-            }
-        }
-
-        /// render output
+        console.log("call", buttonGroupInfo)
+        let buttonGroup = []
         for (var i = 0; i < props.matchInfo.height; i++) {
             let buttonRow = []
             for (var j = 0; j < props.matchInfo.width; j++) {
@@ -133,13 +204,13 @@ const Board = (props) => {
                         key={i + j}
                         className={css.join(' ')}
                         disabled={buttonGroupInfo[i][j].obstacles}
+                        onClick={handleChosen.bind(this, i, j)}
                     >
                         {buttonGroupInfo[i][j].obstacles ?
                             <img src={WallImage} style={{ width: '40px' }}></img> :
                             textOut
                         }
                     </Button >
-
                 )
             }
             buttonGroup.push(
@@ -148,7 +219,8 @@ const Board = (props) => {
                 </Grid>
             )
         }
-    }
+        setButtonGroup(buttonGroup)
+    }, [buttonGroupInfo])
 
 
     return (
@@ -164,7 +236,6 @@ const Board = (props) => {
 const mapStateToProps = (state) => {
     return {
         matchInfo: state.matchInfo
-
     }
 }
 export default connect(mapStateToProps)(Board)

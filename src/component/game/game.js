@@ -24,13 +24,20 @@ const useStyles = makeStyles((theme) => ({
 const Game = (props) => {
     const classes = useStyles();
     const [matchID, setMatchID] = useState(-1)
+
     let options = []
     for (var id in props.matchesInfo) {
         options.push(props.matchesInfo[id])
     }
     const handleChosenMatch = (value) => {
-        props.getMatchesById(value.id)
+        if (!value) return
+        props.getMatchesById(value.id, props.matchesInfo[value.id - 1].teamID)
         setMatchID(value.id - 1)
+    }
+    const handleUpdateMatchManual = () => {
+        if (matchID === -1) return
+        let matchID_tosend = matchID + 1
+        let teamID_tosend = props.matchesInfo[matchID].teamID
     }
     return (
         <Grid
@@ -48,6 +55,7 @@ const Game = (props) => {
                     md={5}
                 >
                     <Button onClick={props.getMatches}>Get matches</Button>
+                    <Button onClick={handleUpdateMatchManual}>Update current match</Button>
                 </Grid>
                 <Grid
                     item
@@ -66,19 +74,23 @@ const Game = (props) => {
                 item
                 md={6}
             >
-                <MatchInfoPanel matchID={matchID} />
+                <MatchInfoPanel matchInfo={matchID === -1 ? null : props.matchesInfo[matchID]} />
+                <Autocomplete
+
+                    renderInput={(params) => <TextField {...params} InputProps={{ ...params.InputProps, style: { fontSize: '0.75em' } }} label="Chọn chiến lược" variant="outlined" />}
+                />
             </Grid>
             <Grid
                 item
                 md={6}
             >
-                <AgentsInfoPanel matchID={matchID} />
+                <AgentsInfoPanel />
             </Grid>
             <Grid
                 item
                 md={12}
             >
-                <Board />
+                <Board teamID={matchID === -1 ? null : props.matchesInfo[matchID].teamID} />
             </Grid>
             <Grid
                 item

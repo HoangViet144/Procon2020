@@ -22,6 +22,22 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 agentAction: action.payload
             }
+        case actionTypes.UPDATE_AGENT_ACTION:
+            let newAgentAction = [...state.agentAction]
+            for (let ele of newAgentAction) {
+                if (ele.agentID == action.payload.agentID) {
+                    ele.dx = action.payload.dx
+                    ele.dy = action.payload.dy
+                    ele.type = action.payload.type
+                }
+            }
+            console.log(newAgentAction)
+            return {
+                ...state,
+                agentAction: [
+                    ...newAgentAction
+                ]
+            }
     }
     return state;
 };

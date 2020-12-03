@@ -13,3 +13,14 @@ export const initBoard = (matchId, agentName, teamId, turn, intervalTime, turnTi
         }
     })
 }
+export const updateAgentAction = (curr, next, type) => (dispatch) => {
+    dispatch({
+        type: actionTypes.UPDATE_AGENT_ACTION,
+        payload: {
+            agentID: curr.id,
+            dx: next.x - curr.x,
+            dy: next.y - curr.y,
+            type: type
+        }
+    })
+}

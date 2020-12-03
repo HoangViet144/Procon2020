@@ -12,6 +12,7 @@ import { connect } from 'react-redux'
 import Board from '../board/board'
 import MatchInfoPanel from '../matchInfoPanel/matchInfoPanel'
 import AgentsInfoPanel from '../agentInfoPanel/agentInfoPanel'
+import { strategiesList } from '../../strategies/strategies'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -19,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
         minHeight: '100%',
         paddingTop: theme.spacing(3),
         paddingBottom: theme.spacing(3)
+    },
+    button: {
+        border: '1px solid black'
     }
 }));
 const Game = (props) => {
@@ -39,6 +43,9 @@ const Game = (props) => {
         let matchID_tosend = matchID + 1
         let teamID_tosend = props.matchesInfo[matchID].teamID
     }
+    const handleChosenStrategy = (value) => {
+        if (value === 1) return
+    }
     return (
         <Grid
             className={classes.root}
@@ -54,12 +61,14 @@ const Game = (props) => {
                     item
                     md={5}
                 >
-                    <Button onClick={props.getMatches}>Get matches</Button>
-                    <Button onClick={handleUpdateMatchManual}>Update current match</Button>
+                    <Button className={classes.button} onClick={props.getMatches}>Get matches</Button>
+                    <Button className={classes.button} onClick={handleUpdateMatchManual}>Update current match</Button>
+                    <Button className={classes.button} >Send action</Button>
                 </Grid>
                 <Grid
                     item
                     md={5}
+
                 >
                     <Autocomplete
                         options={options}
@@ -73,11 +82,17 @@ const Game = (props) => {
             <Grid
                 item
                 md={6}
+                spacing={10}
             >
                 <MatchInfoPanel matchInfo={matchID === -1 ? null : props.matchesInfo[matchID]} />
+                <br />
+                <br />
                 <Autocomplete
-
-                    renderInput={(params) => <TextField {...params} InputProps={{ ...params.InputProps, style: { fontSize: '0.75em' } }} label="Chọn chiến lược" variant="outlined" />}
+                    options={strategiesList}
+                    defaultValue={{ id: 1, name: "Manual" }}
+                    getOptionLabel={(option) => option.name}
+                    onChange={(event, value) => handleChosenStrategy(value)}
+                    renderInput={(params) => <TextField {...params} InputProps={{ ...params.InputProps, style: { fontSize: '0.75em' } }} label="Choose strategy" variant="outlined" />}
                 />
             </Grid>
             <Grid
@@ -92,10 +107,7 @@ const Game = (props) => {
             >
                 <Board teamID={matchID === -1 ? null : props.matchesInfo[matchID].teamID} />
             </Grid>
-            <Grid
-                item
-                md={5}
-            ></Grid>
+
         </Grid>
     )
 }

@@ -9,6 +9,7 @@ import {
 import { connect } from 'react-redux'
 import WallImage from './wall.png'
 import { validateMove } from './validation'
+import { updateAgentAction } from '../../redux/actions'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -18,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: theme.spacing(3)
     },
     button: {
+        transition: 'none',
         border: '1px solid black',
         backgroundColor: 'white',
         maxHeight: '60px',
@@ -49,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
         '50%': { backgroundColor: 'LightCyan', },
         '100%': { backgroundColor: 'LightBlue', }
     },
+    predictedMove: {
+        backgroundColor: 'yellow'
+    }
 }));
 const Board = (props) => {
     const MY_TEAM = props.teamID
@@ -61,21 +66,41 @@ const Board = (props) => {
         y: null
     })
 
-    const handleChosen = (x, y) => {
+    const handleChosen = (i, j) => {
         if (decision.id) {
+            let newButtonGroupInfo = [...buttonGroupInfo]
             console.log("validate begin")
-            validateMove(decision, { x: x, y: y })
+            if (validateMove(decision, { x: j, y: i }, props.agentAction, newButtonGroupInfo, MY_TEAM)) {
+                let type = "stay"
+                if (newButtonGroupInfo[i][j].teamID === 0) type = "move"
+                else if (newButtonGroupInfo[i][j].teamID !== MY_TEAM) type = "remove"
+
+                for (let ele of props.agentAction) {
+                    if (ele.agentID === decision.id) {
+                        let nextX = decision.x + ele.dx
+                        let nextY = decision.y + ele.dy
+                        newButtonGroupInfo[nextY][nextX].css =
+                            newButtonGroupInfo[nextY][nextX].css.filter(item => item !== "predictedMove")
+                        break;
+                    }
+                }
+                newButtonGroupInfo[i][j].css.push("predictedMove")
+                props.updateAgentAction(decision, { x: j, y: i }, type)
+            }
+
+
             setDecision({
                 id: null,
                 x: null,
                 y: null
             })
-            let newButtonGroupInfo = [...buttonGroupInfo]
+
             for (var i = 0; i < props.matchInfo.height; i++) {
                 for (var j = 0; j < props.matchInfo.width; j++) {
                     newButtonGroupInfo[i][j].css = newButtonGroupInfo[i][j].css.filter(item => item !== "suggestTeam1")
                 }
             }
+
             setButtonGroupInfo(newButtonGroupInfo)
 
             return
@@ -83,30 +108,29 @@ const Board = (props) => {
         let newButtonGroupInfo = [...buttonGroupInfo]
         for (let dy = -1; dy <= 1; dy++) {
             for (let dx = -1; dx <= 1; dx++) {
-                let neighborX = x + dx
-                let neighborY = y + dy
+                let neighborX = j + dx
+                let neighborY = i + dy
                 if (neighborX < 0 ||
                     neighborX >= props.matchInfo.width ||
                     neighborY < 0 ||
                     neighborY >= props.matchInfo.height)
-                    return
+                    continue
 
-                if (newButtonGroupInfo[x][y].teamID !== MY_TEAM) return;
-                console.log(x, y, "update button")
-                newButtonGroupInfo[neighborX][neighborY].css.push("suggestTeam1")
+                if (newButtonGroupInfo[i][j].teamID !== MY_TEAM) continue;
+
+                newButtonGroupInfo[neighborY][neighborX].css.push("suggestTeam1")
             }
         }
         setDecision({
-            id: buttonGroupInfo[x][y].agentID,
-            x: x,
-            y: y
+            id: buttonGroupInfo[i][j].agentID,
+            x: j,
+            y: i
         })
         setButtonGroupInfo(newButtonGroupInfo)
     }
     useEffect(() => {
 
         if (!props.matchInfo) return
-        console.log("call1")
         let buttonGroupInfo = []
         /// get point
         for (var i = 0; i < props.matchInfo.height; i++) {
@@ -180,8 +204,6 @@ const Board = (props) => {
     }, [props.matchInfo])
     useEffect(() => {
         if (!props.matchInfo) return
-
-        console.log("call", buttonGroupInfo)
         let buttonGroup = []
         for (var i = 0; i < props.matchInfo.height; i++) {
             let buttonRow = []
@@ -235,7 +257,8 @@ const Board = (props) => {
 }
 const mapStateToProps = (state) => {
     return {
-        matchInfo: state.matchInfo
+        matchInfo: state.matchInfo,
+        agentAction: state.agentAction
     }
 }
-export default connect(mapStateToProps)(Board)
+export default connect(mapStateToProps, { updateAgentAction })(Board)

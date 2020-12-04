@@ -15,7 +15,9 @@ exports.log_create = function (req, res) {
     let log = new Log(
         {
             url: req.body.url,
-            time: req.body.time
+            time: req.body.time,
+            body: req.body.body,
+            response: req.body.response
         }
     );
 
@@ -24,7 +26,7 @@ exports.log_create = function (req, res) {
         .then(data => {
             res.send({
                 success: true,
-                message: 'Product successfully created',
+                message: 'Log successfully created',
                 data: data
             });
         }).catch(err => {

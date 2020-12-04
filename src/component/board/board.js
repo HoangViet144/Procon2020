@@ -105,6 +105,7 @@ const Board = (props) => {
 
             return
         }
+        if (buttonGroupInfo[i][j].teamID !== MY_TEAM) return
         let newButtonGroupInfo = [...buttonGroupInfo]
         for (let dy = -1; dy <= 1; dy++) {
             for (let dx = -1; dx <= 1; dx++) {

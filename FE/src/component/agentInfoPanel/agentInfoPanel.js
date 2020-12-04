@@ -18,7 +18,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 const InfoPanel = (props) => {
     const classes = useStyles();
-    console.log(props.agentAction)
     return (
         <Table>
             <TableBody>

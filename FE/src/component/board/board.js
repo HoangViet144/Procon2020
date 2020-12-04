@@ -69,7 +69,6 @@ const Board = (props) => {
     const handleChosen = (i, j) => {
         if (decision.id) {
             let newButtonGroupInfo = [...buttonGroupInfo]
-            console.log("validate begin")
             if (validateMove(decision, { x: j, y: i }, props.agentAction, newButtonGroupInfo, MY_TEAM)) {
                 let type = "stay"
                 if (newButtonGroupInfo[i][j].teamID === 0) type = "move"
@@ -256,7 +255,6 @@ const Board = (props) => {
             }
         }
         if (haveDiff) {
-            console.log("have diff")
             setButtonGroupInfo(newButtonGroupInfo)
         }
     }, [props.agentAction])

@@ -7,7 +7,6 @@ const initialState = {
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case actionTypes.INIT_BOARD:
-            console.log("call")
             return {
                 ...state,
                 matchesInfo: action.payload
@@ -34,7 +33,6 @@ const reducer = (state = initialState, action) => {
                     ele.type = action.payload.type
                 }
             }
-            console.log(newAgentAction)
             return {
                 ...state,
                 agentAction: [

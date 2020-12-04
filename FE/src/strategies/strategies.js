@@ -5,14 +5,12 @@ export const strategiesList = [
 ]
 export const getActionFromStrategy = (strategy, matchInfo, teamID) => {
     if (!strategy) return
-    console.log("chose strategy", strategy.id)
     if (strategy.id === 1) return
     if (strategy.id === 2) return greedyStrategy(matchInfo, teamID)
     if (strategy.id === 3) return randomStrategy(matchInfo, teamID)
 
 }
 const randomStrategy = (matchInfo, teamID) => {
-    console.log("random strategy")
     return null
 }
 const greedyStrategy = (matchInfo, teamID) => {
@@ -33,7 +31,6 @@ const greedyStrategy = (matchInfo, teamID) => {
     for (let obstacle of matchInfo.obstacles) {
         map_point[obstacle.y - 1][obstacle.x - 1].point = -999999
     }
-    console.log(map_point)
     let agentAction = []
     let agentInfo = []
     if (matchInfo.teams[0].teamID === teamID) agentInfo = matchInfo.teams[0].agents

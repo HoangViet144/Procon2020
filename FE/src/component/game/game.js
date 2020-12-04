@@ -54,7 +54,6 @@ const Game = (props) => {
         if (matchID === -1 || !props.matchInfo || !props.matchesInfo) return
         const timer =
             setInterval(() => {
-                console.log("set interval")
                 if (counter === 0) {
                     clearInterval(timer)
                     return
@@ -90,6 +89,7 @@ const Game = (props) => {
 
     /// auto generate actions by greedy strategy if no decision was made
     const autoGenerateAction = () => {
+        if (!props.agentAction) return //happend when update match manual and agentAction not in store yet
         let madeDecision = false
         for (let agent of props.agentAction) {
             if (agent.dx !== 0 || agent.dy !== 0) {
@@ -118,13 +118,13 @@ const Game = (props) => {
         if (matchID === -1) return
         let matchID_tosend = matchID + 1
         let teamID_tosend = props.matchesInfo[matchID].teamID
-        console.log(matchID_tosend, teamID_tosend)
         props.getMatchesById(matchID_tosend, teamID_tosend)
     }
 
     const handleChosenStrategy = (value) => {
-        if (props.matchInfo) {
-            if (value && value.id === 1) return
+        if (props.matchInfo && props.agentAction) {
+            if (!value) return
+            if (value && value.id === 1) return //manual and not choose any strategy
             let actionList = getActionFromStrategy(value, props.matchInfo, props.matchesInfo[matchID].teamID)
             props.setAgentAction(actionList)
         }

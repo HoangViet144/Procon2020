@@ -23,9 +23,37 @@ export const getMatches = () => async dispatch => {
                         ...response.data
                     }
                 })
+                var anotherConfig = {
+                    method: 'post',
+                    url: 'http://localhost:9000/log/create',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        url: BASE_URL + '/matches',
+                        time: Date.now(),
+                        body: {},
+                        response: response
+                    })
+                };
+                axios(anotherConfig)
             })
             .catch(error => {
                 console.log(error);
+                var anotherConfig = {
+                    method: 'post',
+                    url: 'http://localhost:9000/log/create',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        url: BASE_URL + '/matches',
+                        time: Date.now(),
+                        body: {},
+                        response: error
+                    })
+                };
+                axios(anotherConfig)
             });
     }
     catch (er) {
@@ -75,11 +103,40 @@ export const getMatchesById = (id, teamID) => async dispatch => {
                     type: actionTypes.SET_AGENT_ACTION,
                     payload: agentAction
                 })
+
+                var anotherConfig = {
+                    method: 'post',
+                    url: 'http://localhost:9000/log/create',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        url: BASE_URL + '/matches/' + id.toString(),
+                        time: Date.now(),
+                        body: {},
+                        response: response
+                    })
+                }
+                axios(anotherConfig)
             })
             .catch(error => {
                 console.log(error);
+                var anotherConfig = {
+                    method: 'post',
+                    url: 'http://localhost:9000/log/create',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        url: BASE_URL + '/matches/' + id.toString(),
+                        time: Date.now(),
+                        body: {},
+                        response: error
+                    })
+                }
+                axios(anotherConfig)
             });
-        return
+
     }
     catch (e) {
         console.log(e)
@@ -111,11 +168,38 @@ export const sendAction = (agentAction, id) => {
         axios(config)
             .then(response => {
                 console.log(JSON.stringify(response.data));
+                var anotherConfig = {
+                    method: 'post',
+                    url: 'http://localhost:9000/log/create',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        url: BASE_URL + '/matches/' + id.toString() + "/action",
+                        time: Date.now(),
+                        body: body,
+                        response: response
+                    })
+                };
+                axios(anotherConfig)
             })
             .catch(error => {
                 console.log(error);
+                var anotherConfig = {
+                    method: 'post',
+                    url: 'http://localhost:9000/log/create',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        url: BASE_URL + '/matches/' + id.toString() + "/action",
+                        time: Date.now(),
+                        body: body,
+                        response: error
+                    })
+                };
+                axios(anotherConfig)
             });
-        return
     }
     catch (e) {
         console.log(e)

@@ -70,6 +70,9 @@ const Game = (props) => {
 
     /// send action when time < TIME_THRESH_HOLD
     useEffect(() => {
+        if (counter < 2 * TIME_THRESH_HOLD && matchID !== -1) {
+            autoGenerateAction()
+        }
         if (counter < TIME_THRESH_HOLD && matchID !== -1) {
             console.log("force send action")
             handleSendAction()
@@ -84,6 +87,21 @@ const Game = (props) => {
             sendAction(props.agentAction, props.matchesInfo[matchID].teamID)
         }
     }
+
+    /// auto generate actions by greedy strategy if no decision was made
+    const autoGenerateAction = () => {
+        let madeDecision = false
+        for (let agent of props.agentAction) {
+            if (agent.dx !== 0 || agent.dy !== 0) {
+                madeDecision = true
+                break
+            }
+        }
+        if (!madeDecision) {
+            handleChosenStrategy({ id: 2, name: 'Greedy' })
+        }
+    }
+
     /// list of matches
     let options = []
     for (var id in props.matchesInfo) {

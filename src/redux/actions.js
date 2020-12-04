@@ -24,3 +24,9 @@ export const updateAgentAction = (curr, next, type) => (dispatch) => {
         }
     })
 }
+export const setAgentAction = (action) => dispatch => {
+    dispatch({
+        type: actionTypes.SET_AGENT_ACTION,
+        payload: action
+    })
+}

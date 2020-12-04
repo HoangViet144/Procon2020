@@ -7,13 +7,16 @@ import {
 }
     from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { getMatches, getMatchesById, sendAction } from '../../requestManagement/axiosRequest'
 import { connect } from 'react-redux'
+
 import Board from '../board/board'
 import MatchInfoPanel from '../matchInfoPanel/matchInfoPanel'
 import AgentsInfoPanel from '../agentInfoPanel/agentInfoPanel'
+
 import { strategiesList, getActionFromStrategy } from '../../strategies/strategies'
 import { calculateRemainingTime } from '../timer/timer'
+import { getMatches, getMatchesById, sendAction } from '../../requestManagement/axiosRequest'
+import { setAgentAction } from '../../redux/actions'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -102,7 +105,11 @@ const Game = (props) => {
     }
 
     const handleChosenStrategy = (value) => {
-        getActionFromStrategy(value)
+        if (props.matchInfo) {
+            if (value && value.id === 1) return
+            let actionList = getActionFromStrategy(value, props.matchInfo, props.matchesInfo[matchID].teamID)
+            props.setAgentAction(actionList)
+        }
     }
     return (
         <Grid
@@ -196,4 +203,4 @@ const mapStateToProps = (state) => {
         agentAction: state.agentAction
     }
 }
-export default connect(mapStateToProps, { getMatches, getMatchesById })(Game)
+export default connect(mapStateToProps, { getMatches, getMatchesById, setAgentAction })(Game)

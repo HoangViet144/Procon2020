@@ -15,7 +15,10 @@ const reducer = (state = initialState, action) => {
         case actionTypes.INFO_BOARD:
             return {
                 ...state,
-                matchInfo: action.payload
+                matchInfo: {
+                    ...action.payload,
+                    startedAtUnixTime: Date.now()
+                }
             }
         case actionTypes.SET_AGENT_ACTION:
             return {

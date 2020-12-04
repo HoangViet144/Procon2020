@@ -33,7 +33,6 @@ export const getMatches = () => async dispatch => {
         alert("er")
     }
 }
-const TEAM1 = 1
 export const getMatchesById = (id, teamID) => async dispatch => {
     try {
         console.log(id)
@@ -76,6 +75,42 @@ export const getMatchesById = (id, teamID) => async dispatch => {
                     type: actionTypes.SET_AGENT_ACTION,
                     payload: agentAction
                 })
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        return
+    }
+    catch (e) {
+        console.log(e)
+    }
+}
+export const sendAction = (agentAction, id) => {
+    console.log("trigger send")
+    try {
+        let body = { actions: [] }
+        for (let ele of agentAction) {
+            body.actions.push({
+                agentID: ele.agentID,
+                dx: ele.dx,
+                dy: ele.dy,
+                type: ele.type
+            })
+        }
+        var config = {
+            method: 'post',
+            url: BASE_URL + '/matches/' + id.toString() + "/action",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            params: {
+                token: TOKEN
+            },
+            data: JSON.stringify(body)
+        };
+        axios(config)
+            .then(response => {
+                console.log(JSON.stringify(response.data));
             })
             .catch(error => {
                 console.log(error);

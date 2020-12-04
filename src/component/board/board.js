@@ -244,7 +244,21 @@ const Board = (props) => {
         setButtonGroup(buttonGroup)
     }, [buttonGroupInfo])
 
-
+    useEffect(() => {
+        if (!props.agentAction) return
+        let newButtonGroupInfo = [...buttonGroupInfo]
+        let haveDiff = false
+        for (let ele of props.agentAction) {
+            if (ele.dx != 0 || ele.dy != 0) {
+                haveDiff = true
+                newButtonGroupInfo[ele.curY + ele.dy - 1][ele.curX + ele.dx - 1].css.push("predictedMove")
+            }
+        }
+        if (haveDiff) {
+            console.log("have diff")
+            setButtonGroupInfo(newButtonGroupInfo)
+        }
+    }, [props.agentAction])
     return (
         <Grid
             container

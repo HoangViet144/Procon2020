@@ -145,7 +145,7 @@ export const getMatchesById = (id, teamID) => async dispatch => {
 export const sendAction = (agentAction, id) => {
     console.log("trigger send")
     try {
-        let body = { actions: [] }
+        let body = { actions: [], token: TOKEN }
         for (let ele of agentAction) {
             body.actions.push({
                 agentID: ele.agentID,
@@ -159,9 +159,6 @@ export const sendAction = (agentAction, id) => {
             url: BASE_URL + '/matches/' + id.toString() + "/action",
             headers: {
                 'Content-Type': 'application/json'
-            },
-            params: {
-                token: TOKEN
             },
             data: JSON.stringify(body)
         };

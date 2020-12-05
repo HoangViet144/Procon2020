@@ -33,7 +33,9 @@ const useStyles = makeStyles((theme) => ({
 const TIME_THRESH_HOLD = 1
 const Game = (props) => {
     const classes = useStyles();
+    const [strategy, setStrategy] = useState({})
     const [matchID, setMatchID] = useState(-1)
+    const [teamID, setTeamID] = useState(-1)
     /// remaining time
     const [counter, setCounter] = useState(0)
 
@@ -81,9 +83,9 @@ const Game = (props) => {
 
     /// use for send action of agents 
     const handleSendAction = () => {
-        if (matchID !== -1 && props.agentAction && props.matchesInfo) {
+        if (matchID !== -1 && teamID !== -1 && props.agentAction && props.matchesInfo) {
             console.log("send action to server")
-            sendAction(props.agentAction, props.matchesInfo[matchID].teamID)
+            sendAction(props.agentAction, props.matchesInfo[matchID].id)
         }
     }
 
@@ -110,23 +112,34 @@ const Game = (props) => {
 
     const handleChosenMatch = (value) => {
         if (!value) return
-        props.getMatchesById(value.id, props.matchesInfo[value.id - 1].teamID)
-        setMatchID(value.id - 1)
+        props.getMatchesById(value.id, value.teamID)
+        let ind = 0
+        let cnt = 0
+        for (let i in props.matchesInfo) {
+            if (i.id === value.id) ind = cnt
+            cnt++
+        }
+        setTeamID(value.teamID)
+        setMatchID(ind)
     }
-
+    const handleGenerateAction = () => {
+        if (!strategy.id) return
+        handleChosenStrategy(strategy)
+    }
     const handleUpdateMatchManual = () => {
-        if (matchID === -1) return
-        let matchID_tosend = matchID + 1
-        let teamID_tosend = props.matchesInfo[matchID].teamID
+        if (matchID === -1 || teamID === -1) return
+        let matchID_tosend = props.matchesInfo[matchID].id
+        let teamID_tosend = teamID
         props.getMatchesById(matchID_tosend, teamID_tosend)
     }
 
     const handleChosenStrategy = (value) => {
-        if (props.matchInfo && props.agentAction) {
+        if (props.matchInfo && props.agentAction && teamID !== -1) {
             if (!value) return
             if (value && value.id === 1) return //manual and not choose any strategy
-            let actionList = getActionFromStrategy(value, props.matchInfo, props.matchesInfo[matchID].teamID)
+            let actionList = getActionFromStrategy(value, props.matchInfo, teamID)
             props.setAgentAction(actionList)
+            setStrategy(value)
         }
     }
     return (
@@ -194,6 +207,12 @@ const Game = (props) => {
                     <Grid
                         item
                     >
+                        <Button className={classes.button} onClick={handleGenerateAction}>Generate action</Button>
+
+                    </Grid>
+                    <Grid
+                        item
+                    >
                         <Button className={classes.button} onClick={handleSendAction}>Send action</Button>
                     </Grid>
                 </Grid>
@@ -208,7 +227,7 @@ const Game = (props) => {
                 item
                 md={12}
             >
-                <Board teamID={matchID === -1 ? null : props.matchesInfo[matchID].teamID} />
+                <Board teamID={matchID === -1 ? null : teamID} />
             </Grid>
 
         </Grid>

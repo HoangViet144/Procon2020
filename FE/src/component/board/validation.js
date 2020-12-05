@@ -1,6 +1,6 @@
 export const validateMove = (curr, next, agentAction, mapInfo, teamID) => {
-    if (!curr.id || !curr.x || !curr.y || !next.x || !next.y) {
-        console.log("validate: null data")
+    if (curr.id === undefined || curr.x === undefined || curr.y === undefined || next.x === undefined || next.y === undefined) {
+        console.log("validate: null data", curr.id, curr.x, curr.y, next.x, next.y)
         return false
     }
     let diffX = Math.abs(curr.x - next.x)

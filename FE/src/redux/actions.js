@@ -30,3 +30,15 @@ export const setAgentAction = (action) => dispatch => {
         payload: action
     })
 }
+export const setSendState = (action) =>dispatch=>{
+    dispatch({
+        type: actionTypes.SEND_STATE,
+        payload: action
+    })
+}
+export const setBrain = (action) =>dispatch=>{
+    dispatch({
+        type:actionTypes.BRAIN,
+        payload:action
+    })
+}

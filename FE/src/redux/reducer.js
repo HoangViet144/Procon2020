@@ -1,7 +1,8 @@
 import * as actionTypes from './actiontype';
 
 const initialState = {
-
+  sendState:false,
+  brain:[]
 };
 
 const reducer = (state = initialState, action) => {
@@ -38,6 +39,16 @@ const reducer = (state = initialState, action) => {
                 agentAction: [
                     ...newAgentAction
                 ]
+            }
+        case actionTypes.SEND_STATE:
+            return{
+              ...state,
+              sendState: action.payload
+            }
+        case actionTypes.BRAIN:
+            return {
+              ...state,
+              brain: action.payload
             }
     }
     return state;

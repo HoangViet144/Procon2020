@@ -16,7 +16,7 @@ export const getMatches = () => async dispatch => {
         };
         axios(config)
             .then(response => {
-                console.log(JSON.stringify(response.data));
+               // console.log(JSON.stringify(response.data));
                 dispatch({
                     type: actionTypes.INIT_BOARD,
                     payload: {
@@ -61,9 +61,9 @@ export const getMatches = () => async dispatch => {
         alert("er")
     }
 }
-export const getMatchesById = (id, teamID) => async dispatch => {
+export const getMatchesById = (id, teamID,turn) => async dispatch => {
     try {
-        console.log(id)
+        //console.log(id)
         var config = {
             method: 'get',
             url: BASE_URL + '/matches/' + id.toString(),
@@ -76,7 +76,8 @@ export const getMatchesById = (id, teamID) => async dispatch => {
         };
         axios(config)
             .then(response => {
-                console.log(JSON.stringify(response.data));
+                if (response.data.turn <= turn) return
+                //console.log(JSON.stringify(response.data));
                 let agentInfo = {}
                 if (response.data.teams[0].teamID === teamID)
                     agentInfo = response.data.teams[0].agents
@@ -90,7 +91,8 @@ export const getMatchesById = (id, teamID) => async dispatch => {
                         curY: agentInfo[id].y,
                         dx: 0,
                         dy: 0,
-                        type: 'stay'
+                        type: 'stay',
+                        brain: Math.floor(Math.random()*7)
                     })
                 }
                 dispatch({
@@ -143,7 +145,7 @@ export const getMatchesById = (id, teamID) => async dispatch => {
     }
 }
 export const sendAction = (agentAction, id) => {
-    console.log("trigger send")
+    //console.log("trigger send")
     try {
         let body = { actions: [], token: TOKEN }
         for (let ele of agentAction) {
@@ -164,7 +166,7 @@ export const sendAction = (agentAction, id) => {
         };
         axios(config)
             .then(response => {
-                console.log(JSON.stringify(response.data));
+                //console.log(JSON.stringify(response.data));
                 var anotherConfig = {
                     method: 'post',
                     url: 'http://localhost:9000/log/create',
@@ -181,7 +183,7 @@ export const sendAction = (agentAction, id) => {
                 axios(anotherConfig)
             })
             .catch(error => {
-                console.log(error);
+                //console.log(error);
                 var anotherConfig = {
                     method: 'post',
                     url: 'http://localhost:9000/log/create',
